@@ -73,11 +73,15 @@ def fetch_page_text(playwright) -> tuple[str, str]:
         page.goto(URL, wait_until="domcontentloaded", timeout=60000)
         page.wait_for_timeout(8000)  # let the JS render showtimes
         # scroll to trigger lazy loading of theatre lists
-        for _ in range(4):
+        for _ in range(12):
             page.mouse.wheel(0, 2500)
-            page.wait_for_timeout(1000)
+            page.wait_for_timeout(1200)
         text = page.inner_text("body")
         final_url = page.url
+        try:
+            page.screenshot(path="debug.png", full_page=True)
+        except Exception:
+            pass
     finally:
         browser.close()
     return text, final_url
@@ -117,6 +121,9 @@ def check_once(pw, state: dict) -> None:
     count = count_shows(text)
     prev = state.get("count")
     print(f"[{now}] shows seen: {count} (previous: {prev})")
+    print("Final URL:", final_url)
+    print("Times found:", TIME_RE.findall(text)[:60])
+    print("Page text preview:", text[:600].replace("\n", " | "))
 
     if prev is None:
         state["count"] = count  # first run sets the baseline
