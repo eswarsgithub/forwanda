@@ -113,7 +113,17 @@ def check_once(pw, state: dict) -> None:
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     text, final_url = fetch_page_text(pw)
 
-    blocked = any(k in text.lower() for k in ("access denied", "captcha", "verify you are human"))
+    blocked = any(
+        k in text.lower()
+        for k in (
+            "access denied",
+            "captcha",
+            "verify you are human",
+            "you have been blocked",
+            "unable to access bookmyshow",
+            "cloudflare ray id",
+        )
+    )
     if blocked:
         print(f"[{now}] Page looks blocked. Increase the interval or try later.")
         return
